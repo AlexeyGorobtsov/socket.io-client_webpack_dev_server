@@ -10,6 +10,7 @@ module.exports = {
     },
   ], '@babel/preset-react'],
   plugins: [
+      '@emotion',
     '@babel/transform-runtime',
     '@babel/plugin-proposal-class-properties',
   ],

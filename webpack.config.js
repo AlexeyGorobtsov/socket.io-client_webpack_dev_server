@@ -3,7 +3,6 @@ const { ModuleFederationPlugin } = require('webpack').container;
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const deps = require('./package.json').dependencies;
 
 module.exports = (env) => {
   const isDevMode = env.development;
@@ -21,14 +20,18 @@ module.exports = (env) => {
     mode: isDevMode ? 'development' : 'production',
     // devtool: 'inline-source-map',
     devServer: {
-      contentBase: path.join(__dirname, "build"),
-      compress: true,
-      port: 4200,
-      watchContentBase: true,
-      progress: true,
-      hot: true,
-      open: true,
+      port: 3001,
       historyApiFallback: true,
+      allowedHosts: 'all',
+      client: {
+        progress: true,
+      },
+      proxy: {
+        '/api': {
+          target: 'https://backend.s1327.skipp.dev/',
+          changeOrigin : true,
+        },
+      },
     },
     target: ['web', 'es5'],
     resolve: {
@@ -46,6 +49,22 @@ module.exports = (env) => {
     },
     module: {
       rules: [
+        {
+          test: /\.tsx?/,
+          exclude: /node_modules/,
+          loader: 'babel-loader',
+          options: {
+            cacheDirectory: true,
+            plugins: [
+              [
+                '@babel/plugin-transform-typescript',
+                {
+                  isTSX: true,
+                },
+              ],
+            ],
+          },
+        },
         {
           test: /\.js$/,
           exclude: /node_modules/,
